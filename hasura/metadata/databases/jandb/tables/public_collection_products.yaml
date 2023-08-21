@@ -1,6 +1,25 @@
 table:
   name: collection_products
   schema: public
+array_relationships:
+  - name: collections
+    using:
+      manual_configuration:
+        column_mapping:
+          collection_id: id
+        insertion_order: null
+        remote_table:
+          name: collections
+          schema: public
+  - name: products
+    using:
+      manual_configuration:
+        column_mapping:
+          product_id: id
+        insertion_order: null
+        remote_table:
+          name: products
+          schema: public
 select_permissions:
   - role: public
     permission:
