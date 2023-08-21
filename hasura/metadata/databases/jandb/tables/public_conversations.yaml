@@ -1,0 +1,3 @@
+table:
+  name: conversations
+  schema: public
