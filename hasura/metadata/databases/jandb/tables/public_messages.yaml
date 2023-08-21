@@ -1,3 +1,13 @@
 table:
   name: messages
   schema: public
+array_relationships:
+  - name: message_medias
+    using:
+      manual_configuration:
+        column_mapping:
+          id: message_id
+        insertion_order: null
+        remote_table:
+          name: message_medias
+          schema: public

@@ -1,3 +1,13 @@
 table:
   name: conversations
   schema: public
+array_relationships:
+  - name: conversation_messages
+    using:
+      manual_configuration:
+        column_mapping:
+          id: conversation_id
+        insertion_order: null
+        remote_table:
+          name: messages
+          schema: public

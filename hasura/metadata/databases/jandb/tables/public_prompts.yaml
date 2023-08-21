@@ -1,3 +1,13 @@
 table:
   name: prompts
   schema: public
+array_relationships:
+  - name: prompt_products
+    using:
+      manual_configuration:
+        column_mapping:
+          id: prompt_id
+        insertion_order: null
+        remote_table:
+          name: product_prompts
+          schema: public
