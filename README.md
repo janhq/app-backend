@@ -30,6 +30,8 @@ hasura migrate create "migration_name" --from-server
 hasura migrate apply --version "<version>" --skip-execution
 # Apply new migration
 hasura migrate apply --version "<version>"
+# Apply new all
+hasura migrate apply
 ```
 
 Hasura migration status
@@ -46,6 +48,10 @@ Hasura migration status
 7. Export Hasura Metadata
 
 ```bash
+# Export current metadata
+hasura metadata export
+
+# Import metadata
 hasura metadata export
 ```
 
