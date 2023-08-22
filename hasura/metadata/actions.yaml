@@ -1,6 +1,206 @@
-actions: []
+actions:
+  - name: createChatCompletionV1ChatCompletionsPost
+    definition:
+      kind: synchronous
+      handler: https://inference.jan.ai
+      forward_client_headers: true
+      request_transform:
+        body:
+          action: transform
+          template: |-
+            {
+              "messages": {{if inverse(empty($body.input.createChatCompletionRequestInput?['messages']))}} {{ range _, messages := $body.input.createChatCompletionRequestInput?['messages']}} {
+                "role": {{messages?['role']}},
+                "content": {{messages?['content']}}
+                } {{end}} {{else}} null {{end}},
+              "max_tokens": {{$body.input.createChatCompletionRequestInput?['maxTokens']}},
+              "temperature": {{$body.input.createChatCompletionRequestInput?['temperature']}},
+              "top_p": {{$body.input.createChatCompletionRequestInput?['topP']}},
+              "mirostat_mode": {{$body.input.createChatCompletionRequestInput?['mirostatMode']}},
+              "mirostat_tau": {{$body.input.createChatCompletionRequestInput?['mirostatTau']}},
+              "mirostat_eta": {{$body.input.createChatCompletionRequestInput?['mirostatEta']}},
+              "stop": {{$body.input.createChatCompletionRequestInput?['stop']}},
+              "stream": {{$body.input.createChatCompletionRequestInput?['stream']}},
+              "presence_penalty": {{$body.input.createChatCompletionRequestInput?['presencePenalty']}},
+              "frequency_penalty": {{$body.input.createChatCompletionRequestInput?['frequencyPenalty']}},
+              "logit_bias": {{$body.input.createChatCompletionRequestInput?['logitBias']}},
+              "model": {{$body.input.createChatCompletionRequestInput?['model']}},
+              "n": {{$body.input.createChatCompletionRequestInput?['n']}},
+              "user": {{$body.input.createChatCompletionRequestInput?['user']}},
+              "top_k": {{$body.input.createChatCompletionRequestInput?['topK']}},
+              "repeat_penalty": {{$body.input.createChatCompletionRequestInput?['repeatPenalty']}},
+              "logit_bias_type": {{$body.input.createChatCompletionRequestInput?['logitBiasType']}}
+            }
+        method: POST
+        query_params: {}
+        template_engine: Kriti
+        url: '{{$base_url}}/v1/chat/completions'
+        version: 2
+      response_transform:
+        body:
+          action: transform
+          template: |-
+            {
+              "id": {{$body?['id']}},
+              "object": {{$body?['object']}},
+              "created": {{$body?['created']}},
+              "model": {{$body?['model']}},
+              "choices": {{if inverse(empty($body?['choices']))}} {{ range _, choices := $body?['choices']}} {
+                "index": {{choices?['index']}},
+                "message": {
+                  "role": {{choices?['message']?['role']}},
+                  "content": {{choices?['message']?['content']}},
+                  "user": {{choices?['message']?['user']}}
+                },
+                "finishReason": {{choices?['finish_reason']}}
+                } {{end}} {{else}} null {{end}},
+              "usage": {
+                "promptTokens": {{$body?['usage']?['prompt_tokens']}},
+                "completionTokens": {{$body?['usage']?['completion_tokens']}},
+                "totalTokens": {{$body?['usage']?['total_tokens']}}
+              }
+            }
+        template_engine: Kriti
+        version: 2
+  - name: createCompletionV1CompletionsPost
+    definition:
+      kind: synchronous
+      handler: https://inference.jan.ai
+      forward_client_headers: true
+      request_transform:
+        body:
+          action: transform
+          template: |-
+            {
+              "prompt": {{$body.input.createCompletionRequestInput?['prompt']}},
+              "suffix": {{$body.input.createCompletionRequestInput?['suffix']}},
+              "max_tokens": {{$body.input.createCompletionRequestInput?['maxTokens']}},
+              "temperature": {{$body.input.createCompletionRequestInput?['temperature']}},
+              "top_p": {{$body.input.createCompletionRequestInput?['topP']}},
+              "mirostat_mode": {{$body.input.createCompletionRequestInput?['mirostatMode']}},
+              "mirostat_tau": {{$body.input.createCompletionRequestInput?['mirostatTau']}},
+              "mirostat_eta": {{$body.input.createCompletionRequestInput?['mirostatEta']}},
+              "echo": {{$body.input.createCompletionRequestInput?['echo']}},
+              "stop": {{$body.input.createCompletionRequestInput?['stop']}},
+              "stream": {{$body.input.createCompletionRequestInput?['stream']}},
+              "logprobs": {{$body.input.createCompletionRequestInput?['logprobs']}},
+              "presence_penalty": {{$body.input.createCompletionRequestInput?['presencePenalty']}},
+              "frequency_penalty": {{$body.input.createCompletionRequestInput?['frequencyPenalty']}},
+              "logit_bias": {{$body.input.createCompletionRequestInput?['logitBias']}},
+              "model": {{$body.input.createCompletionRequestInput?['model']}},
+              "n": {{$body.input.createCompletionRequestInput?['n']}},
+              "best_of": {{$body.input.createCompletionRequestInput?['bestOf']}},
+              "user": {{$body.input.createCompletionRequestInput?['user']}},
+              "top_k": {{$body.input.createCompletionRequestInput?['topK']}},
+              "repeat_penalty": {{$body.input.createCompletionRequestInput?['repeatPenalty']}},
+              "logit_bias_type": {{$body.input.createCompletionRequestInput?['logitBiasType']}}
+            }
+        method: POST
+        query_params: {}
+        template_engine: Kriti
+        url: '{{$base_url}}/v1/completions'
+        version: 2
+      response_transform:
+        body:
+          action: transform
+          template: |-
+            {
+              "id": {{$body?['id']}},
+              "object": {{$body?['object']}},
+              "created": {{$body?['created']}},
+              "model": {{$body?['model']}},
+              "choices": {{if inverse(empty($body?['choices']))}} {{ range _, choices := $body?['choices']}} {
+                "text": {{choices?['text']}},
+                "index": {{choices?['index']}},
+                "logprobs": {{choices?['logprobs']}},
+                "finishReason": {{choices?['finish_reason']}}
+                } {{end}} {{else}} null {{end}},
+              "usage": {
+                "promptTokens": {{$body?['usage']?['prompt_tokens']}},
+                "completionTokens": {{$body?['usage']?['completion_tokens']}},
+                "totalTokens": {{$body?['usage']?['total_tokens']}}
+              }
+            }
+        template_engine: Kriti
+        version: 2
+  - name: createEmbeddingV1EmbeddingsPost
+    definition:
+      kind: synchronous
+      handler: https://inference.jan.ai
+      forward_client_headers: true
+      request_transform:
+        body:
+          action: transform
+          template: '{{$body.input.createEmbeddingRequestInput}}'
+        method: POST
+        query_params: {}
+        template_engine: Kriti
+        url: '{{$base_url}}/v1/embeddings'
+        version: 2
+  - name: getModelsV1ModelsGet
+    definition:
+      kind: ""
+      handler: https://inference.jan.ai
+      forward_client_headers: true
+      request_transform:
+        method: GET
+        query_params: {}
+        template_engine: Kriti
+        url: '{{$base_url}}/v1/models'
+        version: 2
+      response_transform:
+        body:
+          action: transform
+          template: |-
+            {
+              "object": {{$body?['object']}},
+              "data": {{if inverse(empty($body?['data']))}} {{ range _, data := $body?['data']}} {
+                "id": {{data?['id']}},
+                "object": {{data?['object']}},
+                "ownedBy": {{data?['owned_by']}},
+                "permissions": {{data?['permissions']}}
+                } {{end}} {{else}} null {{end}}
+            }
+        template_engine: Kriti
+        version: 2
 custom_types:
-  enums: []
-  input_objects: []
-  objects: []
-  scalars: []
+  enums:
+    - name: Role
+      values:
+        - description: null
+          is_deprecated: null
+          value: system
+        - description: null
+          is_deprecated: null
+          value: user
+        - description: null
+          is_deprecated: null
+          value: assistant
+    - name: Role2
+      values:
+        - description: null
+          is_deprecated: null
+          value: assistant
+        - description: null
+          is_deprecated: null
+          value: user
+        - description: null
+          is_deprecated: null
+          value: system
+  input_objects:
+    - name: CreateCompletionRequestInput
+    - name: CreateEmbeddingRequestInput
+    - name: ChatCompletionRequestMessageInput
+    - name: CreateChatCompletionRequestInput
+  objects:
+    - name: Completion
+    - name: CompletionChoice
+    - name: CompletionUsage
+    - name: Logprobs
+    - name: ChatCompletion
+    - name: ChatCompletionChoice
+    - name: ChatCompletionMessage
+    - name: ModelData
+    - name: ModelList
+  scalars:
+    - name: JSON

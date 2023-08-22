@@ -1,0 +1,155 @@
+type Mutation {
+  createChatCompletionV1ChatCompletionsPost(
+    createChatCompletionRequestInput: CreateChatCompletionRequestInput!
+  ): ChatCompletion
+}
+
+type Mutation {
+  createCompletionV1CompletionsPost(
+    createCompletionRequestInput: CreateCompletionRequestInput!
+  ): Completion
+}
+
+type Mutation {
+  createEmbeddingV1EmbeddingsPost(
+    createEmbeddingRequestInput: CreateEmbeddingRequestInput!
+  ): JSON
+}
+
+type Query {
+  getModelsV1ModelsGet: ModelList
+}
+
+enum Role {
+  system
+  user
+  assistant
+}
+
+enum Role2 {
+  assistant
+  user
+  system
+}
+
+input CreateCompletionRequestInput {
+  bestOf: JSON
+  echo: Boolean
+  frequencyPenalty: JSON
+  logitBias: JSON
+  logitBiasType: JSON
+  logprobs: JSON
+  maxTokens: Int
+  mirostatEta: Float
+  mirostatMode: Int
+  mirostatTau: Float
+  model: JSON
+  n: JSON
+  presencePenalty: JSON
+  prompt: JSON
+  repeatPenalty: Float
+  stop: JSON
+  stream: Boolean
+  suffix: JSON
+  temperature: Float
+  topK: Int
+  topP: Float
+  user: JSON
+}
+
+input CreateEmbeddingRequestInput {
+  input: JSON!
+  model: JSON
+  user: JSON
+}
+
+input ChatCompletionRequestMessageInput {
+  content: String
+  role: Role
+}
+
+input CreateChatCompletionRequestInput {
+  frequencyPenalty: JSON
+  logitBias: JSON
+  logitBiasType: JSON
+  maxTokens: Int
+  messages: [ChatCompletionRequestMessageInput]
+  mirostatEta: Float
+  mirostatMode: Int
+  mirostatTau: Float
+  model: JSON
+  n: JSON
+  presencePenalty: JSON
+  repeatPenalty: Float
+  stop: JSON
+  stream: Boolean
+  temperature: Float
+  topK: Int
+  topP: Float
+  user: JSON
+}
+
+type Completion {
+  choices: [CompletionChoice]!
+  created: Int!
+  id: String!
+  model: String!
+  object: JSON!
+  usage: CompletionUsage!
+}
+
+type CompletionChoice {
+  finishReason: JSON!
+  index: Int!
+  logprobs: Logprobs!
+  text: String!
+}
+
+type CompletionUsage {
+  completionTokens: Int!
+  promptTokens: Int!
+  totalTokens: Int!
+}
+
+type Logprobs {
+  textOffset: [Int]
+  tokenLogprobs: [JSON]
+  tokens: [String]
+  topLogprobs: [JSON]
+}
+
+type ChatCompletion {
+  choices: [ChatCompletionChoice]!
+  created: Int!
+  id: String!
+  model: String!
+  object: JSON!
+  usage: CompletionUsage!
+}
+
+type ChatCompletionChoice {
+  finishReason: JSON!
+  index: Int!
+  message: ChatCompletionMessage!
+}
+
+type ChatCompletionMessage {
+  content: String!
+  role: Role2!
+  user: String!
+}
+
+type ModelData {
+  id: String!
+  object: JSON!
+  ownedBy: String!
+  permissions: [String]!
+}
+
+type ModelList {
+  data: [ModelData]!
+  object: JSON!
+}
+
+scalar JSON
+
