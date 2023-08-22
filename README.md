@@ -55,3 +55,17 @@ hasura metadata apply
 git add .
 git commit -m "initialize migrations and metadata"
 ```
+8. Create seeds
+```bash
+hasura seed create collectionsSeed --from-table products
+```
+
+9. Apply seed
+
+```bash
+# Apply all seeds on the database:
+hasura seed apply
+
+# Apply only a particular file:
+hasura seed apply --file 1692710119690_productsSeed.sql
+```
