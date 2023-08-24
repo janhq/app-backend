@@ -8,4 +8,4 @@ WHERE slug IN ('openai','airoboros','guanaco','wizardvicuna','hermes');
 INSERT INTO public.collection_products (collection_id, product_id)
 SELECT (SELECT id FROM public.collections WHERE slug = 'text-to-image') AS collection_id, id AS product_id
 FROM public.products
-WHERE slug IN ('openjourney','dreamshaper','meina-mix','controlnet');
+WHERE slug IN ('openjourney','dreamshaper_7','meinamix','controlnet');

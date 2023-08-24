@@ -2,7 +2,7 @@ actions:
   - name: imageGeneration
     definition:
       kind: synchronous
-      handler: https://sd-inference.jan.ai
+      handler: '{{HASURA_ACTION_STABLE_DIFFUSION_URL}}'
       request_transform:
         body:
           action: transform
