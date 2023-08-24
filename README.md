@@ -69,3 +69,10 @@ hasura seed apply
 # Apply only a particular file:
 hasura seed apply --file 1692710119690_productsSeed.sql
 ```
+
+10. Worker 
+
+Cloudflare worker for new llm message request hook
+
+Readmore about Hasura Events here:
+> https://hasura.io/docs/latest/event-triggers/serverless/
