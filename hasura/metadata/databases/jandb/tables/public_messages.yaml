@@ -33,24 +33,27 @@ insert_permissions:
         - conversation_id
         - message_sender_type
         - message_type
+        - prompt_cache
         - sender
         - sender_avatar_url
         - sender_name
+        - status
     comment: ""
 select_permissions:
   - role: user
     permission:
       columns:
+        - content
+        - conversation_id
+        - created_at
+        - id
         - message_sender_type
         - message_type
-        - content
         - sender
         - sender_avatar_url
         - sender_name
-        - created_at
+        - status
         - updated_at
-        - conversation_id
-        - id
       filter:
         message_conversation:
           user_id:
@@ -66,6 +69,7 @@ update_permissions:
         - sender
         - sender_avatar_url
         - sender_name
+        - status
       filter:
         message_conversation:
           user_id:
@@ -80,3 +84,14 @@ delete_permissions:
           user_id:
             _eq: X-Hasura-User-Id
     comment: ""
+event_triggers:
+  - name: new_llm_message
+    definition:
+      enable_manual: false
+      insert:
+        columns: '*'
+    retry_conf:
+      interval_sec: 10
+      num_retries: 0
+      timeout_sec: 60
+    webhook: '{{HASURA_EVENTS_HOOK_URL}}'

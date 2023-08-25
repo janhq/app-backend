@@ -37,5 +37,16 @@ services:
       timeout: 10s
       retries: 5
       start_period: 5s
+  worker:
+    build:
+      context: ./
+      dockerfile: ./worker/Dockerfile
+    restart: always
+    environment:
+      - "NODE_ENV=development"
+    volumes:
+      - .:/worker
+    ports:
+      - "8787:8787"
 volumes:
   db_data:
