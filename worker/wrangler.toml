@@ -6,6 +6,6 @@ workers_dev = true
 [vars]
 HASURA_GRAPHQL_ENGINE_ENDPOINT = "http://graphql-engine:8080"
 HASURA_ADMIN_API_KEY = "myadminsecretkey"
-LLM_INFERENCE_ENDPOINT=""
+LLM_INFERENCE_ENDPOINT="http://llm:8000/v1/chat/completions"
 INFERENCE_API_KEY=""
 PROJECT_ID = ""
