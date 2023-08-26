@@ -18,11 +18,11 @@ async function handleRequest(env: Env, request: Request) {
   const messageBody = {
     id: requestBody.event.data.new.id,
     content: requestBody.event.data.new.content,
-    messages: requestBody.event.data.new.prompt_cache
+    messages: requestBody.event.data.new.prompt_cache,
   };
 
   if (messageBody.content !== "") {
-    return new Response("success", {
+    return new Response(JSON.stringify({ status: "success" }), {
       status: 200,
       statusText: "success",
     });
@@ -96,7 +96,7 @@ async function handleRequest(env: Env, request: Request) {
           });
       }
 
-      return new Response("success", {
+      return new Response(JSON.stringify({ status: "success" }), {
         status: 200,
         statusText: "success",
       });

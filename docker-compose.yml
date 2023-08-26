@@ -39,13 +39,13 @@ services:
       start_period: 5s
   worker:
     build:
-      context: ./
-      dockerfile: ./worker/Dockerfile
+      context: ./worker
+      dockerfile: ./Dockerfile
     restart: always
     environment:
       - "NODE_ENV=development"
     volumes:
-      - .:/worker
+      - ./worker:/worker
     ports:
       - "8787:8787"
 volumes:

@@ -3,11 +3,13 @@
 # alpine does not work with wrangler
 FROM node 
 
-WORKDIR /
+RUN mkdir -p /worker
+
+WORKDIR /worker
 
 RUN npm install -g wrangler
 
-COPY ./worker /
+COPY . /worker
 
 EXPOSE 8787
 
