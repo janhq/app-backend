@@ -53,6 +53,7 @@ async function handleRequest(env: Env, request: Request) {
         return;
       }
       let answer = "";
+      let cachedChunk = "";
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
@@ -61,9 +62,14 @@ async function handleRequest(env: Env, request: Request) {
 
         const textDecoder = new TextDecoder("utf-8");
         const chunk = textDecoder.decode(value);
+        cachedChunk += chunk
+        const matched = cachedChunk.match(/data: {(.*)}/g);
+        if(!matched) {
+          continue
+        }
 
         let deltaText = "";
-        for (const line of chunk.split("\n")) {
+        for (const line of cachedChunk.split("\n")) {
           const trimmedLine = line.trim();
           if (!trimmedLine || trimmedLine === "data: [DONE]") {
             continue;
@@ -76,6 +82,7 @@ async function handleRequest(env: Env, request: Request) {
             if (content) deltaText = deltaText.concat(content);
           } catch (e) {}
         }
+        cachedChunk = ""
 
         answer = answer + deltaText;
 
