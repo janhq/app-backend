@@ -15,13 +15,40 @@ async function handleRequest(env: Env, request: Request) {
   const apiurl = env.LLM_INFERENCE_ENDPOINT;
   const requestBody = await request.json();
 
+  let lastCallTime = 0;
+  let timeoutId: any;
+  let done = true;
+
+  function throttle(fn: () => void, delay: number) {
+    return async function () {
+      const now = new Date().getTime();
+      const timeSinceLastCall = now - lastCallTime;
+
+      if (timeSinceLastCall >= delay && done) {
+        lastCallTime = now;
+        done = false;
+        await fn();
+        done = true;
+      } else {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(async () => {
+          lastCallTime = now;
+          done = false;
+          await fn();
+          done = true;
+        }, delay - timeSinceLastCall);
+      }
+    };
+  }
+
   const messageBody = {
     id: requestBody.event.data.new.id,
     content: requestBody.event.data.new.content,
     messages: requestBody.event.data.new.prompt_cache,
+    status: requestBody.event.data.new.status,
   };
 
-  if (messageBody.content !== "") {
+  if (messageBody.status !== "pending") {
     return new Response(JSON.stringify({ status: "success" }), {
       status: 200,
       statusText: "success",
@@ -62,10 +89,10 @@ async function handleRequest(env: Env, request: Request) {
 
         const textDecoder = new TextDecoder("utf-8");
         const chunk = textDecoder.decode(value);
-        cachedChunk += chunk
+        cachedChunk += chunk;
         const matched = cachedChunk.match(/data: {(.*)}/g);
-        if(!matched) {
-          continue
+        if (!matched) {
+          continue;
         }
 
         let deltaText = "";
@@ -80,28 +107,55 @@ async function handleRequest(env: Env, request: Request) {
             const obj = JSON.parse(json);
             const content = obj.choices[0].delta.content;
             if (content) deltaText = deltaText.concat(content);
-          } catch (e) {}
+          } catch (e) {
+            console.log(e);
+          }
         }
-        cachedChunk = ""
+        cachedChunk = "";
 
         answer = answer + deltaText;
 
-        const qv = { id: messageBody.id, content: answer, prompt_cache: null };
-
-        await fetch(env.HASURA_GRAPHQL_ENGINE_ENDPOINT + "/v1/graphql", {
-          method: "POST",
-          body: JSON.stringify({ query: query, variables: qv }),
-          headers: {
-            "Content-Type": "application/json",
-            "x-hasura-admin-secret": env.HASURA_ADMIN_API_KEY,
+        const variables = {
+          id: messageBody.id,
+          data: {
+            content: answer,
           },
-        })
-          .then((res) => res.json())
-          .then((json) => console.log(json))
-          .catch((error) => {
-            console.error(error);
-          });
+        };
+
+        throttle(async () => {
+          await fetch(env.HASURA_GRAPHQL_ENGINE_ENDPOINT + "/v1/graphql", {
+            method: "POST",
+            body: JSON.stringify({ query: query, variables }),
+            headers: {
+              "Content-Type": "application/json",
+              "x-hasura-admin-secret": env.HASURA_ADMIN_API_KEY,
+            },
+          })
+            .catch((error) => {
+              console.error(error);
+            })
+            .finally(() => console.log("++-- request sent"));
+        }, 300)();
       }
+
+      const variables = {
+        id: messageBody.id,
+        data: {
+          status: "ready",
+          prompt_cache: null,
+        },
+      };
+
+      await fetch(env.HASURA_GRAPHQL_ENGINE_ENDPOINT + "/v1/graphql", {
+        method: "POST",
+        body: JSON.stringify({ query: query, variables }),
+        headers: {
+          "Content-Type": "application/json",
+          "x-hasura-admin-secret": env.HASURA_ADMIN_API_KEY,
+        },
+      }).catch((error) => {
+        console.error(error);
+      });
 
       return new Response(JSON.stringify({ status: "success" }), {
         status: 200,
@@ -111,10 +165,10 @@ async function handleRequest(env: Env, request: Request) {
 }
 
 const query = `
-  mutation chatCompletions($id: uuid = "", $content: String = "", $prompt_cache: jsonb) {
-    update_messages_by_pk(pk_columns: {id: $id}, _set: {content: $content, prompt_cache: $prompt_cache}) {
-      id
-      content
-    }
+mutation chatCompletions($id: uuid = "", $data: messages_set_input) {
+  update_messages_by_pk(pk_columns: {id: $id}, _set: $data) {
+    id
+    content
   }
+}
 `;
