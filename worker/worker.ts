@@ -125,7 +125,7 @@ async function handleRequest(env: Env, request: Request) {
         throttle(async () => {
           await fetch(env.HASURA_GRAPHQL_ENGINE_ENDPOINT + "/v1/graphql", {
             method: "POST",
-            body: JSON.stringify({ query: query, variables }),
+            body: JSON.stringify({ query: updateMessageQuery, variables }),
             headers: {
               "Content-Type": "application/json",
               "x-hasura-admin-secret": env.HASURA_ADMIN_API_KEY,
@@ -148,7 +148,22 @@ async function handleRequest(env: Env, request: Request) {
 
       await fetch(env.HASURA_GRAPHQL_ENGINE_ENDPOINT + "/v1/graphql", {
         method: "POST",
-        body: JSON.stringify({ query: query, variables }),
+        body: JSON.stringify({ query: updateMessageQuery, variables }),
+        headers: {
+          "Content-Type": "application/json",
+          "x-hasura-admin-secret": env.HASURA_ADMIN_API_KEY,
+        },
+      }).catch((error) => {
+        console.error(error);
+      });
+
+      const convUpdateVars = {
+        id: requestBody.event.data.new.conversation_id,
+        content: answer
+      }
+      await fetch(env.HASURA_GRAPHQL_ENGINE_ENDPOINT + "/v1/graphql", {
+        method: "POST",
+        body: JSON.stringify({ query: updateConversationquery, variables: convUpdateVars }),
         headers: {
           "Content-Type": "application/json",
           "x-hasura-admin-secret": env.HASURA_ADMIN_API_KEY,
@@ -164,7 +179,7 @@ async function handleRequest(env: Env, request: Request) {
     });
 }
 
-const query = `
+const updateMessageQuery = `
 mutation chatCompletions($id: uuid = "", $data: messages_set_input) {
   update_messages_by_pk(pk_columns: {id: $id}, _set: $data) {
     id
@@ -172,3 +187,11 @@ mutation chatCompletions($id: uuid = "", $data: messages_set_input) {
   }
 }
 `;
+
+const updateConversationquery = `
+mutation updateConversation($id: uuid = "", $content: String = "") {
+  update_conversations_by_pk(pk_columns: {id: $id}, _set: {last_text_message: $content}) {
+    id
+  }
+}
+`
