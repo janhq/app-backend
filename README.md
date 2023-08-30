@@ -1,5 +1,8 @@
-# app-backend
+## Jan Backend
 
+A Hasura Data API Platform designed to provide APIs for client interaction with the Language Model (LLM) through chat or the generation of art using Stable Diffusion. It is encapsulated within a Docker container for easy local deployment
+
+## Quickstart
 1. Run docker up
 
 ```bash
@@ -14,65 +17,43 @@ docker compose up
 cd hasura && hasura console
 ```
 
-4. Modify [Data / Authorization / Actions / Remote Schemas / Events](https://hasura.io/docs/latest/resources/tutorials/index/)
-5. Hasura Migration (using command)
+4. Apply Migration
 
 ```bash
-# Apply all
 hasura migrate apply
-
-# Create new migration
-hasura migrate create "migration_name" --from-server
-# Apply migration without executing (migrate from an existing db)
-hasura migrate apply --version "<version>" --skip-execution
-# Apply new migration
-hasura migrate apply --version "<version>"
-```
-Migration status
-
-```bash
- hasura migrate status
 ```
 
-| VERSION       |            NAME             | SOURCE  | STATUS  | DATABASE | STATUS |
-| :------------ | :-------------------------: | :-----: | :-----: | :------: | -----: |
-| 1590493510167 |            init             | Present | Present |
-| 1590497881360 | create_table_public_address | Present | Present |
-
-6. Export Metadata
+5. Apply Metadata
 
 ```bash
-# Export current metadata
-hasura metadata export
-
-# Apply metadata
 hasura metadata apply
 ```
 
-7. Add a checkpoint to version control
+6. Apply seeds
 
 ```bash
-git add .
-git commit -m "initialize migrations and metadata"
-```
-8. Create seeds
-```bash
-hasura seed create collectionsSeed --from-table products
-```
-
-9. Apply seed
-
-```bash
-# Apply all seeds on the database:
 hasura seed apply
-
-# Apply only a particular file:
-hasura seed apply --file 1692710119690_productsSeed.sql
 ```
 
-10. Worker 
+## Hasura One Click Deploy
+Use this URL to deploy this app to Hasura Cloud
 
-Cloudflare worker for new llm message request hook
+[![Hasura Deploy](https://hasura.io/deploy-button.svg)](https://cloud.hasura.io/deploy?github_repo=https://github.com/janhq/app-backend/&hasura_dir=/hasura)
+
+[One-click deploy docs](https://hasura.io/docs/latest/getting-started/getting-started-cloud/)
+
+## Modify schema & model
+[Hasura Tutorials](https://hasura.io/docs/latest/resources/tutorials/index/)
+
+## Events & Workers 
+
+Serverless function (Cloudflare worker) to stream llm message & update
 
 Readmore about Hasura Events here:
 > https://hasura.io/docs/latest/event-triggers/serverless/
+
+## Deploy Worker
+```bash
+npx wrangler deploy
+```
+[Cloudflare Worker Guide](https://developers.cloudflare.com/workers/get-started/guide/)

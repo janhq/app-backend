@@ -10,6 +10,8 @@ input ImageGenerationInput {
   model: String!
   seed: Int!
   steps: Int!
+  width: Int!
+  height: Int!
 }
 
 type ImageGenerationOutput {

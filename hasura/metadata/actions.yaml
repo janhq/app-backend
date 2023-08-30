@@ -12,12 +12,14 @@ actions:
               "neg_prompt": {{$body.input.input.neg_prompt}},
               "unet_model": {{$body.input.input.model}},
               "seed": {{$body.input.input.seed}},
-              "steps": {{$body.input.input.steps}}
+              "steps": {{$body.input.input.steps}},
+              "width": {{$body.input.input.width}},
+              "height": {{$body.input.input.height}}
             }
         method: POST
         query_params: {}
         template_engine: Kriti
-        url: '{{$base_url}}/sd_inference'
+        url: '{{$base_url}}/inferences/txt2img'
         version: 2
     permissions:
       - role: user
